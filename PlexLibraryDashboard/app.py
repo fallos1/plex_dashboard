@@ -104,37 +104,6 @@ app.layout = html.Div(
                     className="row",
                 ),
                 dcc.Graph(id="ratings_histogram"),
-                html.Div(
-                    className="container",
-                    children=[
-                        html.Label(
-                            children=[
-                                "Minimum Rating",
-                                dcc.Input(
-                                    id="min_rating",
-                                    type="number",
-                                    placeholder="Minimum Rating",
-                                    min=0,
-                                    max=10,
-                                    step=0.1,
-                                ),
-                            ]
-                        ),
-                        html.Label(
-                            children=[
-                                "Maximum Rating",
-                                dcc.Input(
-                                    id="max_rating",
-                                    type="number",
-                                    placeholder="Maximum Rating",
-                                    min=0,
-                                    max=10,
-                                    step=0.1,
-                                ),
-                            ],
-                        ),
-                    ],
-                ),
             ],
         ),
     ]
@@ -364,11 +333,7 @@ def draw_popular_director_chart(years, actors, countries, genres, ratings):
 
 # Ratings disribution histogram
 @app.callback(
-    [
-        Output("ratings_histogram", "figure"),
-        Output("min_rating", "value"),
-        Output("max_rating", "value"),
-    ],
+    Output("ratings_histogram", "figure"),
     [
         Input("year_bar_chart", "selectedData"),
         Input("popular_director_bar", "selectedData"),
@@ -391,7 +356,7 @@ def draw_ratings_histogram(years, directors, actors, countries, genres):
     ratings_histogram.update_layout(
         title="Rating Distribution", clickmode="event+select"
     )
-    return ratings_histogram, min(ratings), max(ratings)
+    return ratings_histogram
 
 
 # Handle button to reset all filters
