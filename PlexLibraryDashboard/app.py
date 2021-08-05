@@ -39,8 +39,7 @@ if test == True:
     metadata["actors"] = metadata["actors"].apply(ast.literal_eval)
     metadata["directors"] = metadata["directors"].apply(ast.literal_eval)
 else:
-    account = MyPlexAccount("furatallos@gmail.com", "andre123")
-    plex = account.resource("FA").connect()
+    pass
 metadata["countries"] = metadata["countries"].apply(add_china_to_hk)
 
 # Initialise Plotly Dash
