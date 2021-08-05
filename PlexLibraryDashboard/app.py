@@ -113,11 +113,7 @@ app.layout = html.Div(
 
 # Movies per Year bar chart
 @app.callback(
-    [
-        Output("year_bar_chart", "figure"),
-        Output("initial_loading", "style"),
-        Output("main", "style"),
-    ],
+    Output("year_bar_chart", "figure"),
     [
         Input("reset_filters", "n_clicks"),
         Input("popular_director_bar", "selectedData"),
@@ -147,7 +143,7 @@ def draw_year_chart(x, directors, actors, countries, genres, ratings):  # rating
         ),
         clickmode="event+select",
     )
-    return year_bar_chart, {"display": "none"}, {"display": "inline"}
+    return year_bar_chart
 
 
 # Highest rated movies table
@@ -298,7 +294,11 @@ def draw_popular_actor_bar(years, directors, countries, genres, ratings):
 
 # Popular Directors bar chart
 @app.callback(
-    Output("popular_director_bar", "figure"),
+    [
+        Output("popular_director_bar", "figure"),
+        Output("initial_loading", "style"),
+        Output("main", "style"),
+    ],
     [
         Input("year_bar_chart", "selectedData"),
         Input("popular_actor_bar", "selectedData"),
@@ -328,7 +328,7 @@ def draw_popular_director_chart(years, actors, countries, genres, ratings):
         margin=dict(r=0),
         clickmode="event+select",
     )
-    return director_counts_bar
+    return director_counts_bar, {"display": "none"}, {"display": "inline"}
 
 
 # Ratings disribution histogram
