@@ -8,6 +8,8 @@ from functions import (
 import pandas as pd
 import numpy as np
 import ast
+import os
+
 
 import dash
 import dash_core_components as dcc
@@ -42,7 +44,7 @@ else:
 metadata["countries"] = metadata["countries"].apply(add_china_to_hk)
 
 # Initialise Plotly Dash
-app = dash.Dash()
+app = dash.Dash(__name__)
 server = app.server
 # Dash layout
 app.layout = html.Div(
