@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import ast
 import os
-
+import time
 
 import dash
 import dash_core_components as dcc
@@ -104,6 +104,7 @@ app.layout = html.Div(
                     className="row",
                 ),
                 dcc.Graph(id="ratings_histogram"),
+                dcc.Graph(id="popular_actor_bar_animated", style={"display": "none"}),
             ],
         ),
     ]
@@ -294,11 +295,7 @@ def draw_popular_actor_bar(years, directors, countries, genres, ratings):
 
 # Popular Directors bar chart
 @app.callback(
-    [
-        Output("popular_director_bar", "figure"),
-        Output("initial_loading", "style"),
-        Output("main", "style"),
-    ],
+    Output("popular_director_bar", "figure"),
     [
         Input("year_bar_chart", "selectedData"),
         Input("popular_actor_bar", "selectedData"),
@@ -328,7 +325,7 @@ def draw_popular_director_chart(years, actors, countries, genres, ratings):
         margin=dict(r=0),
         clickmode="event+select",
     )
-    return director_counts_bar, {"display": "none"}, {"display": "inline"}
+    return director_counts_bar
 
 
 # Ratings disribution histogram
@@ -357,6 +354,61 @@ def draw_ratings_histogram(years, directors, actors, countries, genres):
         title="Rating Distribution", clickmode="event+select"
     )
     return ratings_histogram
+
+
+@app.callback(
+    [
+        Output("popular_actor_bar_animated", "figure"),
+        Output("initial_loading", "style"),
+        Output("main", "style"),
+    ],
+    [
+        Input("year_bar_chart", "selectedData"),
+        Input("popular_director_bar", "selectedData"),
+        Input("country_choropleth", "selectedData"),
+    ],
+)
+def draw_popular_actor_animated(years, directors, countries):
+    df = filter_dataframe1(
+        metadata,
+        ["year", "directors", "countries"],
+        [years, directors, countries],
+    )
+    df = df[["actors", "year", "title", "release_date"]].explode("actors")
+    # Keep only top 10 actors
+    top_ten_actors = df["actors"].value_counts()[0:10].index
+    df = df[df["actors"].isin(top_ten_actors)]
+    # Only keep years >1 actor worked
+    valid_years = np.sort(df["year"].unique())
+
+    running_total = {}
+    for actor in top_ten_actors:
+        running_total[actor] = 0
+    running_total
+
+    rows = []
+    for year in valid_years:
+        df_subset = df[df["year"] == year]
+        for row in df_subset.itertuples():
+            if row.actors in top_ten_actors:
+                running_total[row.actors] += 1
+        for actor in running_total:
+            rows.append([year, actor, running_total[actor]])
+
+    running_total_df = pd.DataFrame(rows, columns=["year", "actor", "running_count"])
+    actors_animated = px.bar(
+        running_total_df,
+        x="running_count",
+        y="actor",
+        animation_frame="year",
+        title="Running Total of Most Popular Actors",
+    ).update_yaxes(categoryorder="total ascending")
+    actors_animated.update_layout(
+        xaxis_range=[0, max(running_total_df["running_count"])],
+        margin=dict(r=0),
+        clickmode="event+select",
+    )
+    return actors_animated, {"display": "none"}, {"display": "inline"}
 
 
 # Handle button to reset all filters
