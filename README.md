@@ -11,6 +11,7 @@ Install requirements
 ```bash
 > python app.py
 ```
+By default the app will operate on port 8050
 
 <h3> Requirements </h3>
 
