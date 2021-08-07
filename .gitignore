@@ -3,3 +3,4 @@
 .env
 etc
 __pycache__
+config_test.py

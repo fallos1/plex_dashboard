@@ -1,15 +1,6 @@
-from functions import (
-    create_colorscale,
-    generate_counts,
-    filter_dataframe,
-    add_china_to_hk,
-)
-
 import pandas as pd
 import numpy as np
 import ast
-import os
-import time
 
 import dash
 import dash_core_components as dcc
@@ -19,6 +10,15 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import plotly.io as pio
 import plotly.graph_objects as go
+
+import config
+from functions import (
+    create_colorscale,
+    generate_counts,
+    filter_dataframe,
+    add_china_to_hk,
+    extract_from_library
+)
 
 from plexapi.myplex import MyPlexAccount
 
@@ -31,15 +31,33 @@ pio.templates["custom"]["layout"]["colorway"] = ("yellow",)
 pio.templates.default = "custom"
 
 # Load Data
-test = True
-if test == True:
+TEST = True if config.USERNAME == None else False
+if TEST == False:
+    try:
+        print("Connecting to plex...")
+        account = MyPlexAccount(config.USERNAME, config.PASSWORD)
+        plex = account.resource(config.SERVER_NAME).connect()
+        movies = plex.library.section(config.LIBRARY_NAME)
+    except:
+        print("Error: Could not connect to plex server. Please check config.py")
+        user_input = input("Continue with test data y/n: ")
+        if user_input.lower().startswith("y"):
+            TEST = True 
+        else:
+            quit()
+
+if TEST == True:
     metadata = pd.read_csv("test.csv")
     metadata["genres"] = metadata["genres"].apply(ast.literal_eval)
     metadata["countries"] = metadata["countries"].apply(ast.literal_eval)
     metadata["actors"] = metadata["actors"].apply(ast.literal_eval)
     metadata["directors"] = metadata["directors"].apply(ast.literal_eval)
 else:
-    pass
+    print("Successfully connceted")
+    metadata = extract_from_library(movies.search())
+    metadata = pd.DataFrame(metadata)
+
+# Map currently does not support Honk Kong as seperate country
 metadata["countries"] = metadata["countries"].apply(add_china_to_hk)
 
 # Initialise Plotly Dash
@@ -419,6 +437,7 @@ def draw_popular_actor_animated(years, directors, countries):
 @app.callback(
     [
         Output("year_bar_chart", "selectedData"),
+        Output("genre_bar_chart", "selectedData"),
         Output("popular_director_bar", "selectedData"),
         Output("popular_actor_bar", "selectedData"),
         Output("country_choropleth", "selectedData"),
@@ -427,11 +446,11 @@ def draw_popular_actor_animated(years, directors, countries):
     Input("reset_filters", "n_clicks"),
 )
 def reset_filters(x):
-    return (None,) * 5
+    return (None,) * 6
 
 
 if __name__ == "__main__":
-    app.run_server()
+    app.run_server(debug=config.DEBUG, port=config.PORT)
 
 # To do
 # Hong Kong to be seperated
