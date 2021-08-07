@@ -22,3 +22,4 @@ Install from requirements.txt or:
 > pip install pandas
 > pip install plexapi
 ```
+https://user-images.githubusercontent.com/33049641/128594396-0c6915d6-0374-4a85-bd27-15e4bbc0252b.mov
