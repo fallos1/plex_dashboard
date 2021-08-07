@@ -1,7 +1,7 @@
 from functions import (
     create_colorscale,
     generate_counts,
-    filter_dataframe1,
+    filter_dataframe,
     add_china_to_hk,
 )
 
@@ -33,7 +33,7 @@ pio.templates.default = "custom"
 # Load Data
 test = True
 if test == True:
-    metadata = pd.read_csv("test_anime.csv")
+    metadata = pd.read_csv("test.csv")
     metadata["genres"] = metadata["genres"].apply(ast.literal_eval)
     metadata["countries"] = metadata["countries"].apply(ast.literal_eval)
     metadata["actors"] = metadata["actors"].apply(ast.literal_eval)
@@ -123,9 +123,9 @@ app.layout = html.Div(
         Input("ratings_histogram", "selectedData"),
     ],
 )
-def draw_year_chart(x, directors, actors, countries, genres, ratings):  # ratings):
+def draw_year_chart(x, directors, actors, countries, genres, ratings):
 
-    df = filter_dataframe1(
+    df = filter_dataframe(
         metadata,
         ["directors", "actors", "countries", "genres", "rating"],
         [directors, actors, countries, genres, ratings],
@@ -141,6 +141,7 @@ def draw_year_chart(x, directors, actors, countries, genres, ratings):  # rating
         margin=dict(
             r=0,
         ),
+        xaxis_tickformat="d",
         clickmode="event+select",
     )
     return year_bar_chart
@@ -160,7 +161,7 @@ def draw_year_chart(x, directors, actors, countries, genres, ratings):  # rating
 )
 def items_per_year(years, directors, actors, countries, genres, ratings):
 
-    df = filter_dataframe1(
+    df = filter_dataframe(
         metadata,
         ["year", "directors", "actors", "countries", "genres", "rating"],
         [years, directors, actors, countries, genres, ratings],
@@ -196,7 +197,7 @@ def items_per_year(years, directors, actors, countries, genres, ratings):
 )
 def draw_genre_chart(years, directors, actors, countries, ratings):
 
-    df = filter_dataframe1(
+    df = filter_dataframe(
         metadata,
         ["year", "directors", "actors", "countries", "rating"],
         [years, directors, actors, countries, ratings],
@@ -213,6 +214,7 @@ def draw_genre_chart(years, directors, actors, countries, ratings):
     genre_counts_bar.update_yaxes(categoryorder="total ascending")
     genre_counts_bar.update_layout(
         yaxis=dict(dtick=1),
+        xaxis_tickformat="d",
         margin=dict(r=0),
         clickmode="event+select",
     )
@@ -231,7 +233,7 @@ def draw_genre_chart(years, directors, actors, countries, ratings):
     ],
 )
 def draw_country_choropleth(years, directors, actors, genres, ratings):
-    df = filter_dataframe1(
+    df = filter_dataframe(
         metadata,
         ["year", "directors", "actors", "genres", "rating"],
         [years, directors, actors, genres, ratings],
@@ -259,6 +261,7 @@ def draw_country_choropleth(years, directors, actors, genres, ratings):
     return choropleth
 
 
+# Popular Actors bar chart
 @app.callback(
     Output("popular_actor_bar", "figure"),
     [
@@ -270,7 +273,7 @@ def draw_country_choropleth(years, directors, actors, genres, ratings):
     ],
 )
 def draw_popular_actor_bar(years, directors, countries, genres, ratings):
-    df = filter_dataframe1(
+    df = filter_dataframe(
         metadata,
         ["year", "directors", "countries", "genres", "rating"],
         [years, directors, countries, genres, ratings],
@@ -288,6 +291,7 @@ def draw_popular_actor_bar(years, directors, countries, genres, ratings):
         yaxis=dict(dtick=1),
         margin=dict(r=0),
         clickmode="event+select",
+        xaxis_tickformat="d",
     )
     return actor_counts_bar
 
@@ -305,7 +309,7 @@ def draw_popular_actor_bar(years, directors, countries, genres, ratings):
 )
 def draw_popular_director_chart(years, actors, countries, genres, ratings):
     # df = filter_dataframe(metadata, ["year"], [years])
-    df = filter_dataframe1(
+    df = filter_dataframe(
         metadata,
         ["year", "actors", "countries", "genres", "rating"],
         [years, actors, countries, genres, ratings],
@@ -323,6 +327,7 @@ def draw_popular_director_chart(years, actors, countries, genres, ratings):
         yaxis=dict(dtick=1),
         margin=dict(r=0),
         clickmode="event+select",
+        xaxis_tickformat="d",
     )
     return director_counts_bar
 
@@ -339,7 +344,7 @@ def draw_popular_director_chart(years, actors, countries, genres, ratings):
     ],
 )
 def draw_ratings_histogram(years, directors, actors, countries, genres):
-    df = filter_dataframe1(
+    df = filter_dataframe(
         metadata,
         ["year", "directors", "actors", "countries", "genres"],
         [years, directors, actors, countries, genres],
@@ -368,7 +373,7 @@ def draw_ratings_histogram(years, directors, actors, countries, genres):
     ],
 )
 def draw_popular_actor_animated(years, directors, countries):
-    df = filter_dataframe1(
+    df = filter_dataframe(
         metadata,
         ["year", "directors", "countries"],
         [years, directors, countries],

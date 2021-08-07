@@ -8,25 +8,7 @@ def list_item_isin_list(list1: list, list2: list):
     return False
 
 
-# Map Hong Kong to china. todo: seperate hong kong in map
-def add_china_to_hk(x):
-    if "Hong Kong" in x:
-        if "China" not in x:
-            x.append("China")
-    return x
-
-
-filter_method = {
-    "year": None,
-    "directors": "overlap",
-    "actors": "overlap",
-    "countries": "overlap",
-    "genres": "overlap",
-    "rating": None,
-}
-
-
-def filter_dataframe1(
+def filter_dataframe(
     original: pd.DataFrame,
     columns: list,
     conditions: list,
@@ -41,6 +23,15 @@ def filter_dataframe1(
     Returns:
         [pd.DataFrame]: Filtered DataFrame
     """
+    filter_method = {
+        "year": None,
+        "directors": "overlap",
+        "actors": "overlap",
+        "countries": "overlap",
+        "genres": "overlap",
+        "rating": None,
+    }
+
     for column, condition in zip(columns, conditions):
         if condition != None:
             if column == "countries":
@@ -129,3 +120,11 @@ def hover(df: pd.DataFrame, year: int):
         return year_slice
     else:
         return year_slice[0:5]
+
+
+# Map Hong Kong to china. todo: seperate hong kong in map
+def add_china_to_hk(x):
+    if "Hong Kong" in x:
+        if "China" not in x:
+            x.append("China")
+    return x
