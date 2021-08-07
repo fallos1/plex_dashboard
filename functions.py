@@ -122,6 +122,32 @@ def hover(df: pd.DataFrame, year: int):
         return year_slice[0:5]
 
 
+def extract_from_library(library):
+    """Get data about each plex item
+
+    Args:
+        library (list): list of plex movies
+
+    Returns:
+        [list]: list of rows to crate pandas DataFrame
+    """
+    rows = []
+    for i in library:
+        rows.append({
+            "title": i.title,
+            "year": i.year,
+            "rating": i.audienceRating,
+            "genres": [genre.tag for genre in i.genres],
+            "countries": [country.tag for country in i.countries],
+            "actors": [actor.tag for actor in i.actors],
+            "directors": [director.tag for director in i.directors],
+            "studio": i.studio,
+            "bitrate": i.media[0].bitrate,
+            "release_date": i.originallyAvailableAt,
+        })
+    return rows
+
+
 # Map Hong Kong to china. todo: seperate hong kong in map
 def add_china_to_hk(x):
     if "Hong Kong" in x:
