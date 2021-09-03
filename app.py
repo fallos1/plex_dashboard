@@ -450,7 +450,7 @@ def reset_filters(x):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=config.DEBUG, port=config.PORT)
+    app.run_server(host="0.0.0.0", debug=config.DEBUG, port=config.PORT)
 
 # To do
 # Hong Kong to be seperated
