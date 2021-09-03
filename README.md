@@ -11,6 +11,7 @@ Install requirements
 ```bash
 > python app.py
 ```
+
 By default the app will operate on port 8050
 
 <h3> Requirements </h3>
@@ -23,4 +24,12 @@ Install from requirements.txt or:
 > pip install pandas
 > pip install plexapi
 ```
+
+<h3> Run with Docker </h3>
+
+```bash
+> docker build --tag plex-dashboard
+> docker run -p 8050:8050 plex-dashboard
+```
+
 https://user-images.githubusercontent.com/33049641/128594396-0c6915d6-0374-4a85-bd27-15e4bbc0252b.mov
